@@ -6,20 +6,18 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const multer = require("multer");
 const fs = require("fs");
-const formidable = require('formidable');
 
 const registerUser = async (req, res) => {
-    const { error } = validate(req.body);
+    const { error } = validate(req.fields);
     if (error) {
+        console.log(error);
         return res.status(400).send(error.details[0].message);
     }
-    let user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email: req.fields.email });
     if (user) {
         return res.status(400).send('That user already exisits!');
     } else {
-        // upload.single("img");
-        // Insert the new user if they do not exist yet
-        user = new User(_.pick(req.body, ['name', 'email', 'password']));
+        user = new User(_.pick(req.fields, ['name', 'email', 'password']));
         // user = new User({
         //     name: req.body.name,
         //     email: req.body.email,
