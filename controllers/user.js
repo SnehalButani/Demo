@@ -6,7 +6,6 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const multer = require("multer");
 const fs = require("fs");
-const formidable = require('formidable');
 
 const registerUser = async (req, res) => {
 
