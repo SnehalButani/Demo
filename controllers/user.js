@@ -9,14 +9,15 @@ const fs = require("fs");
 const formidable = require('formidable');
 
 const registerUser = async (req, res) => {
-    const { error } = validate(req.body);
-    if (error) {
-        return res.status(400).send(error.details[0].message);
-    }
-    let user = await User.findOne({ email: req.body.email });
-    if (user) {
-        return res.status(400).send('That user already exisits!');
-    } else {
+
+    // const { error } = validate(req.body);
+    // if (error) {
+    //     return res.status(400).send(error.details[0].message);
+    // }
+    // let user = await User.findOne({ email: req.body.email });
+    // if (user) {
+    //     return res.status(400).send('That user already exisits!');
+    // } else {
         // upload.single("img");
         // Insert the new user if they do not exist yet
         user = new User(_.pick(req.body, ['name', 'email', 'password']));
@@ -30,7 +31,7 @@ const registerUser = async (req, res) => {
         await user.save();
         const token = jwt.sign({ _id: user._id }, config.get('PrivateKey'));
         res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email']));
-    }
+    // }
 };
 
 const loginUser = async (req, res) => {
