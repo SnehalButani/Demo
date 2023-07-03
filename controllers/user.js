@@ -48,7 +48,22 @@ const loginUser = async (req, res) => {
         return res.status(400).send('Incorrect email or password.');
     }
     const token = jwt.sign({ _id: user._id }, config.get('PrivateKey'));
-    res.send(token);
+    const userData = _.pick(user,['_id', 'name', 'email'])
+    res.send({userData : {...userData,token}});
 };
 
-module.exports = { registerUser, loginUser };
+const verifyToken = (req, res, next) => {
+    const authHeader = req.header("Authorization");
+    if (authHeader) {
+        const token = authHeader.split(" ")[1];
+        jwt.verify(token, config.get('PrivateKey'), (err, user) => {
+            if (err) { return res.status(403).json("Token is not valid!"); }
+            req.user = user;
+            next();
+        });
+    } else {
+        return res.status(401).json("You are not authenticated!");
+    }
+};
+
+module.exports = { registerUser, loginUser, verifyToken };
