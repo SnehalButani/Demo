@@ -20,7 +20,7 @@ const registerUser = async (req, res) => {
     // } else {
         // upload.single("img");
         // Insert the new user if they do not exist yet
-        user = new User(_.pick(req.body, ['name', 'email', 'password']));
+        user = new User(_.pick(req.fields, ['name', 'email', 'password']));
         // user = new User({
         //     name: req.body.name,
         //     email: req.body.email,
@@ -72,7 +72,7 @@ const verifyToken = (req, res, next) => {
 };
 
 const fileFilter = (req, file, cb) => {
-    console.log(file.mimetype);
+    console.log(req.fields);
     if (
         file.mimetype === 'image/jpeg' ||
         file.mimetype === 'image/png' ||
