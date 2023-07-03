@@ -3,6 +3,7 @@ const { Post, validate } = require('../modules/post');
 const _ = require('lodash');
 const config = require('config');
 const { User } = require('../modules/user');
+const multer = require('multer');
 
 const createPost = async (req, res) => {
     const { error } = validate(req.body);
@@ -16,9 +17,8 @@ const createPost = async (req, res) => {
     await post.save();
     // const user = await User.findOne({_id: post.createdBy}).populate('createdBy').exec();
     // console.log(user);
-    let newPost = await Post.findById(post.id).populate("createdBy").exec();
-    _.pick(newPost.createdBy, ['_id', 'name', 'email'])
+    let newPost = await Post.findById(post.id).populate("createdBy",['name','_id','email']).exec();
     res.send(newPost);
 };
 
-module.exports = { createPost };
+module.exports = { createPost};

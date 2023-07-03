@@ -13,7 +13,9 @@ if (!config.get('PrivateKey')) {
 }
 
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({extended: true}));
+
+
 app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
 

@@ -5,4 +5,5 @@ const {createPost} = require('../controllers/post')
 
 router.post("/createPost", verifyToken ,createPost);
 
+
 module.exports = router;

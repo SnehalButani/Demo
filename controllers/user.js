@@ -4,6 +4,9 @@ const bcrypt = require('bcrypt');
 const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const multer = require("multer");
+const fs = require("fs");
+const formidable = require('formidable');
 
 const registerUser = async (req, res) => {
     const { error } = validate(req.body);
@@ -14,6 +17,7 @@ const registerUser = async (req, res) => {
     if (user) {
         return res.status(400).send('That user already exisits!');
     } else {
+        // upload.single("img");
         // Insert the new user if they do not exist yet
         user = new User(_.pick(req.body, ['name', 'email', 'password']));
         // user = new User({
@@ -48,8 +52,8 @@ const loginUser = async (req, res) => {
         return res.status(400).send('Incorrect email or password.');
     }
     const token = jwt.sign({ _id: user._id }, config.get('PrivateKey'));
-    const userData = _.pick(user,['_id', 'name', 'email'])
-    res.send({userData : {...userData,token}});
+    const userData = _.pick(user, ['_id', 'name', 'email'])
+    res.send({ userData: { ...userData, token } });
 };
 
 const verifyToken = (req, res, next) => {
@@ -66,4 +70,51 @@ const verifyToken = (req, res, next) => {
     }
 };
 
-module.exports = { registerUser, loginUser, verifyToken };
+const fileFilter = (req, file, cb) => {
+    console.log(file.mimetype);
+    if (
+        file.mimetype === 'image/jpeg' ||
+        file.mimetype === 'image/png' ||
+        file.mimetype === 'image/jpg'
+    ) {
+        cb(null, true);
+    } else {
+        cb('INVALID FILE!!!!', false);
+    }
+};
+
+const upload = multer({
+    limits: 1024 * 1024 * 5,
+    fileFilter: fileFilter,
+    storage: multer.diskStorage({
+        destination: (req, file, callback) => {
+            let path = `./uploads/img`;
+            if (!fs.existsSync(path)) {
+                fs.mkdirSync(path);
+            }
+            callback(null, path);
+        },
+        filename: function (req, file, cb) {
+            cb(null, file.fieldname + '-' + Date.now() + '.jpg');
+        }
+    })
+});
+
+const imguploads = (req, res) => {
+    console.log(req.file);
+    if (req.file) {
+        Bucketupload(req.file.buffer)
+            .then((result) => {
+                return res.status(200).json({
+                    msg: "Image upload successfully",
+                    imgURL: result
+                });
+            })
+            .catch((err) => {
+                res.status(400).json(err);
+                console.log(err);
+            })
+    }
+};
+
+module.exports = { registerUser, loginUser, verifyToken, imguploads, upload };
