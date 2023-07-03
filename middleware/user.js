@@ -7,8 +7,12 @@ module.exports = async function (req, res, next) {
         }
         let user = await User.findOne({ email: req.fields.email });
         if (user) {
+            console.log("AMIT");
+
             return res.status(400).send('That user already exisits!');
         }
+        console.log("AMIT");
+
         next();
     }
     catch (error) {

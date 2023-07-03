@@ -7,18 +7,7 @@ const config = require('config');
 const multer = require("multer");
 const fs = require("fs");
 
-const registerUser = async (req, res) => {
-
-    // const { error } = validate(req.body);
-    // if (error) {
-    //     return res.status(400).send(error.details[0].message);
-    // }
-    // let user = await User.findOne({ email: req.body.email });
-    // if (user) {
-    //     return res.status(400).send('That user already exisits!');
-    // } else {
-        // upload.single("img");
-        // Insert the new user if they do not exist yet
+const registerUser = async (req, res) => {   
         user = new User(_.pick(req.fields, ['name', 'email', 'password']));
         // user = new User({
         //     name: req.body.name,
@@ -83,38 +72,38 @@ const fileFilter = (req, file, cb) => {
     }
 };
 
-const upload = multer({
-    limits: 1024 * 1024 * 5,
-    fileFilter: fileFilter,
-    storage: multer.diskStorage({
-        destination: (req, file, callback) => {
-            let path = `./uploads/img`;
-            if (!fs.existsSync(path)) {
-                fs.mkdirSync(path);
-            }
-            callback(null, path);
-        },
-        filename: function (req, file, cb) {
-            cb(null, file.fieldname + '-' + Date.now() + '.jpg');
-        }
-    })
-});
+// const upload = multer({
+//     limits: 1024 * 1024 * 5,
+//     fileFilter: fileFilter,
+//     storage: multer.diskStorage({
+//         destination: (req, file, callback) => {
+//             let path = `./uploads/img`;
+//             if (!fs.existsSync(path)) {
+//                 fs.mkdirSync(path);
+//             }
+//             callback(null, path);
+//         },
+//         filename: function (req, file, cb) {
+//             cb(null, file.fieldname + '-' + Date.now() + '.jpg');
+//         }
+//     })
+// });
 
-const imguploads = (req, res) => {
-    console.log(req.file);
-    if (req.file) {
-        Bucketupload(req.file.buffer)
-            .then((result) => {
-                return res.status(200).json({
-                    msg: "Image upload successfully",
-                    imgURL: result
-                });
-            })
-            .catch((err) => {
-                res.status(400).json(err);
-                console.log(err);
-            })
-    }
-};
+// const imguploads = (req, res) => {
+//     console.log(req.file);
+//     if (req.file) {
+//         Bucketupload(req.file.buffer)
+//             .then((result) => {
+//                 return res.status(200).json({
+//                     msg: "Image upload successfully",
+//                     imgURL: result
+//                 });
+//             })
+//             .catch((err) => {
+//                 res.status(400).json(err);
+//                 console.log(err);
+//             })
+//     }
+// };
 
-module.exports = { registerUser, loginUser, verifyToken, imguploads, upload };
+module.exports = { registerUser, loginUser, verifyToken };
